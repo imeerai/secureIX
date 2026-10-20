@@ -113,7 +113,7 @@ export async function downloadExtension() {
   link.style.display = "none";
   document.body.appendChild(link);
   link.click();
-  link.remove();
+  window.setTimeout(() => link.remove(), 100);
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
