@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   X,
   Puzzle,
@@ -11,7 +11,20 @@ import {
 import { downloadExtension } from "../utils/extensionDownload";
 
 export default function ExtensionPromoModal({ isOpen, onClose }) {
+  const [downloadState, setDownloadState] = useState("idle");
+
   if (!isOpen) return null;
+
+  const handleDownload = async () => {
+    setDownloadState("downloading");
+    try {
+      await downloadExtension();
+      setDownloadState("done");
+    } catch (error) {
+      console.error("Extension download failed:", error);
+      setDownloadState("error");
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in overflow-y-auto">
@@ -123,11 +136,23 @@ export default function ExtensionPromoModal({ isOpen, onClose }) {
           </div>
           <div className="flex w-full sm:w-auto flex-col sm:flex-row gap-2">
             <button
-              onClick={downloadExtension}
+              type="button"
+              onClick={handleDownload}
+              disabled={downloadState === "downloading"}
               className="w-full sm:w-auto bg-[#10b981] text-black px-5 py-2 text-xs font-bold rounded-lg border-2 border-black brutal-shadow-sm brutal-hover flex items-center justify-center gap-2"
             >
-              <Download className="w-4 h-4" /> Download Extension
+              <Download className="w-4 h-4" />
+              {downloadState === "downloading"
+                ? "Preparing ZIP..."
+                : downloadState === "done"
+                  ? "Download Started"
+                  : "Download Extension"}
             </button>
+            {downloadState === "error" && (
+              <p className="text-xs text-red-600 font-bold sm:absolute sm:bottom-1 sm:right-4">
+                Download failed. Please try again.
+              </p>
+            )}
             <button
               onClick={onClose}
               className="w-full sm:w-auto bg-black text-white px-5 py-2 text-xs font-bold rounded-lg border-2 border-black brutal-shadow-sm brutal-hover"

@@ -37,7 +37,10 @@ function createZip(files) {
 
   for (const file of files) {
     const name = encoder.encode(file.name);
-    const data = typeof file.content === "string" ? encoder.encode(file.content) : file.content;
+    const data =
+      typeof file.content === "string"
+        ? encoder.encode(file.content)
+        : file.content;
     const crc = crc32(data);
     const localHeader = new ArrayBuffer(30 + name.length);
     const localView = new DataView(localHeader);
@@ -90,7 +93,7 @@ export async function downloadExtension() {
   const icons = await Promise.all(
     Object.entries(iconUrls).map(async ([size, url]) => ({
       name: `icons/icon${size}.png`,
-      content: new Uint8Array(await (await fetch(url)).arrayBuffer()),
+      content: await fetchExtensionAsset(url),
     })),
   );
 
@@ -107,6 +110,17 @@ export async function downloadExtension() {
   const link = document.createElement("a");
   link.href = url;
   link.download = "securix-quickscan-extension.zip";
+  link.style.display = "none";
+  document.body.appendChild(link);
   link.click();
-  URL.revokeObjectURL(url);
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+async function fetchExtensionAsset(url) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Could not package extension asset (${response.status}).`);
+  }
+  return new Uint8Array(await response.arrayBuffer());
 }
