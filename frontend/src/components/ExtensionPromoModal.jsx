@@ -15,10 +15,10 @@ export default function ExtensionPromoModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
-  const handleDownload = async () => {
+  const handleDownload = () => {
     setDownloadState("downloading");
     try {
-      await downloadExtension();
+      downloadExtension();
       setDownloadState("done");
     } catch (error) {
       console.error("Extension download failed:", error);

@@ -4,10 +4,10 @@ import popupHtml from "../../../extension/popup.html?raw";
 import popupCss from "../../../extension/popup.css?raw";
 import popupJs from "../../../extension/popup.js?raw";
 import readme from "../../../extension/README.md?raw";
-import icon16 from "../../../extension/icons/icon16.png?url";
-import icon32 from "../../../extension/icons/icon32.png?url";
-import icon48 from "../../../extension/icons/icon48.png?url";
-import icon128 from "../../../extension/icons/icon128.png?url";
+import icon16 from "../../../extension/icons/icon16.png?inline";
+import icon32 from "../../../extension/icons/icon32.png?inline";
+import icon48 from "../../../extension/icons/icon48.png?inline";
+import icon128 from "../../../extension/icons/icon128.png?inline";
 
 const encoder = new TextEncoder();
 
@@ -86,16 +86,20 @@ function createZip(files) {
   });
 }
 
-const iconUrls = { 16: icon16, 32: icon32, 48: icon48, 128: icon128 };
+const iconDataUrls = { 16: icon16, 32: icon32, 48: icon48, 128: icon128 };
 
-export async function downloadExtension() {
+function dataUrlToBytes(dataUrl) {
+  const base64 = dataUrl.split(",", 2)[1];
+  const binary = atob(base64);
+  return Uint8Array.from(binary, (character) => character.charCodeAt(0));
+}
+
+export function downloadExtension() {
   const manifest = JSON.parse(manifestSource);
-  const icons = await Promise.all(
-    Object.entries(iconUrls).map(async ([size, url]) => ({
-      name: `icons/icon${size}.png`,
-      content: await fetchExtensionAsset(url),
-    })),
-  );
+  const icons = Object.entries(iconDataUrls).map(([size, dataUrl]) => ({
+    name: `icons/icon${size}.png`,
+    content: dataUrlToBytes(dataUrl),
+  }));
 
   const files = [
     ...icons,
@@ -115,12 +119,4 @@ export async function downloadExtension() {
   link.click();
   window.setTimeout(() => link.remove(), 100);
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
-async function fetchExtensionAsset(url) {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Could not package extension asset (${response.status}).`);
-  }
-  return new Uint8Array(await response.arrayBuffer());
 }
