@@ -1,0 +1,108 @@
+{
+  "preferences": {
+    "launchPreviewPersistedWorkspaces": [],
+    "launchPreviewSessionScopedSessions": [],
+    "coworkScheduledTasksEnabled": false,
+    "coworkHipaaRestricted": false,
+    "ccdScheduledTasksEnabled": false,
+    "hybridDetectLatched": true,
+    "earlyWindowShowLatched": true,
+    "coworkWebSearchEnabled": true,
+    "remoteToolsDeviceName": "meer",
+    "orgWorkAcrossAppsDisabled": true,
+    "coworkPreferredBrowser": "built_in",
+    "coworkBrowserToolsEnabled": false,
+    "coworkModelAutoFallbackByAccount": {
+      "d1305468-d5e1-4f83-b1b8-62fbbb7db863": true
+    },
+    "epitaxyPrefs": {
+      "starred-local-code-sessions": [],
+      "starred-cowork-spaces": [],
+      "starred-session-groups": [],
+      "starred-local-routines": [],
+      "starred-local-sessions": [],
+      "dframe-group-scopes": {},
+      "dframe-local-slice": {
+        "pinnedOrder": [],
+        "homeProjectsPinnedOrder": []
+      },
+      "dframe-code-sections": {
+        "d1305468-d5e1-4f83-b1b8-62fbbb7db863/947aacb1-3886-421c-892f-d2e21def6642": {
+          "sections": [
+            {
+              "id": "pinned",
+              "kind": "pinned",
+              "name": "",
+              "order": 0,
+              "sortBy": "recency",
+              "ascending": false,
+              "show": {
+                "metadata": true,
+                "emptyGroups": false
+              },
+              "collapsed": false
+            },
+            {
+              "id": "routines",
+              "kind": "routines",
+              "name": "",
+              "order": 1,
+              "sortBy": "recency",
+              "ascending": false,
+              "show": {
+                "metadata": true,
+                "emptyGroups": false
+              },
+              "collapsed": true
+            },
+            {
+              "id": "sessions",
+              "kind": "sessions",
+              "name": "",
+              "order": 2,
+              "sortBy": "recency",
+              "ascending": false,
+              "show": {
+                "metadata": true,
+                "emptyGroups": false
+              },
+              "collapsed": false
+            }
+          ],
+          "migratedFrom": 1,
+          "prefsSeeded": true
+        }
+      },
+      "desktop-frame.paneStore.v1": {
+        "state": {
+          "extraPanesByMode": {},
+          "colWeightsByMode": {},
+          "rowSplit": 0.5,
+          "draftNonce": 0,
+          "lastPrimaryCodeSession": null
+        },
+        "version": 4
+      },
+      "ccd-sessions-filter": {
+        "state": {
+          "selectedProjects": []
+        },
+        "version": 0
+      }
+    },
+    "bypassPermissionsGateByAccount": {
+      "d1305468-d5e1-4f83-b1b8-62fbbb7db863": false
+    }
+  },
+  "coworkUserFilesPath": "/home/zebra/Claude",
+  "mcpServers": {
+    "overleaf": {
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "@mjyoo2/overleaf-mcp"],
+      "env": {
+        "OVERLEAF_PROJECT_ID": "6ac293fdeafb4aa6930cfb64",
+        "OVERLEAF_GIT_TOKEN": "olp_8T2j7QIOYF37luK878jKVMKCgmrUJI11ssNb"
+      }
+    }
+  }
+}

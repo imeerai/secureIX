@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecureIX QuickScan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="app-container bg-grid-pattern">
+    <!-- Top Header -->
+    <header class="header">
+      <div class="brand">
+        <div class="logo-shield">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">SecureIX</span>
+          <span class="brand-sub">3-in-1 QuickScan</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <span id="backendStatusPill" class="status-pill status-connecting" title="Backend connectivity">
+          <span class="status-dot"></span> <span id="statusText">CONNECTING</span>
+        </span>
+        <button id="btnSettings" class="icon-btn" title="Configuration Settings">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Settings Drawer -->
+    <div id="settingsPanel" class="settings-panel hidden">
+      <div class="settings-title">Extension Settings</div>
+      <div class="form-group">
+        <label for="apiUrlInput">SecureIX Backend API URL:</label>
+        <input type="text" id="apiUrlInput" value="http://localhost:3000" placeholder="http://localhost:3000" />
+      </div>
+      <div class="form-group">
+        <label for="frontendUrlInput">SecureIX Web Dashboard URL:</label>
+        <input type="text" id="frontendUrlInput" value="http://localhost:5173" placeholder="http://localhost:5173" />
+      </div>
+      <div class="settings-buttons">
+        <button id="btnSaveSettings" class="btn btn-save">Save Config</button>
+        <button id="btnCloseSettings" class="btn btn-cancel">Cancel</button>
+      </div>
+    </div>
+
+    <!-- URL Input & Analyzer Form -->
+    <form id="scanForm" class="scan-input-box">
+      <div class="input-wrapper">
+        <span class="input-icon">🔍</span>
+        <input 
+          type="text" 
+          id="targetUrlInput" 
+          class="url-input" 
+          placeholder="Enter site URL (e.g. github.com)" 
+          autocomplete="off" 
+          spellcheck="false"
+        />
+        <button type="button" id="btnActiveTab" class="btn-tab-action" title="Fill with Active Tab URL">
+          <span>Active Tab</span>
+        </button>
+      </div>
+      <button type="submit" id="btnSubmitScan" class="btn-scan-action">
+        <span>Scan</span>
+      </button>
+    </form>
+
+    <!-- Multi-Engine Checkboxes -->
+    <div class="extension-checkboxes">
+      <label class="check-pill" title="Audit Tech Stack & Hosting Provider">
+        <input type="checkbox" id="chkTechStack" checked />
+        <span>⚡ Tech Stack</span>
+      </label>
+      <label class="check-pill" title="Audit Technical SEO & Lighthouse">
+        <input type="checkbox" id="chkSeo" checked />
+        <span>📈 SEO Audit</span>
+      </label>
+    </div>
+
+    <!-- Target Bar info -->
+    <div class="target-bar" id="targetBar">
+      <div class="target-url-info">
+        <span class="url-protocol-badge" id="protocolBadge">HTTPS</span>
+        <span class="target-hostname" id="targetHostname" title="Active Target">Ready to scan</span>
+      </div>
+      <button id="btnRefresh" class="icon-btn-refresh" title="Re-scan this page">
+        <svg id="refreshIcon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loadingView" class="view-state loading-view">
+      <div class="neo-radar">
+        <div class="neo-radar-pulse"></div>
+        <div class="neo-radar-icon">⚡</div>
+      </div>
+      <p class="loading-text" id="loadingText">Auditing Target Systems...</p>
+      <div class="loading-sub" id="loadingSubText">Analyzing TLS, Headers, Hosting & SEO metrics</div>
+    </div>
+
+    <!-- Error / Unsupported Page State -->
+    <div id="errorView" class="view-state hidden">
+      <div class="error-box">
+        <div class="error-icon">⚠️</div>
+        <h4 id="errorTitle">Cannot Scan Page</h4>
+        <p id="errorMessage">Browser internal pages cannot be analyzed.</p>
+      </div>
+    </div>
+
+    <!-- Main Results View -->
+    <div id="resultsView" class="view-state hidden">
+      <!-- Score & Grade Hero Card -->
+      <div class="score-card">
+        <div class="grade-box-wrapper">
+          <div id="gradeBadge" class="grade-badge grade-a">A</div>
+        </div>
+
+        <div class="score-details">
+          <div class="score-row">
+            <div class="score-number-wrap">
+              <span id="scoreValue" class="score-num">--</span>
+              <span class="score-max">/100</span>
+            </div>
+            <div id="classificationBadge" class="classification-pill">SAFE SITE</div>
+          </div>
+          
+          <div class="scan-meta">
+            <span id="scanLatency" class="meta-tag">0ms</span>
+            <span id="findingsSummary" class="meta-tag">10 Channels</span>
+          </div>
+
+          <div id="alertBanner" class="threat-alert hidden">
+            <span>⚡</span> <span id="alertText">Vulnerabilities detected</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Multi-Engine Quick Badges (Tech Stack & SEO) -->
+      <div class="multi-summary-row" id="multiSummaryRow">
+        <div class="multi-badge badge-tech hidden" id="badgeTechWrap">
+          <span class="multi-badge-label">⚡ HOST:</span>
+          <span class="multi-badge-val" id="badgeTechHost">--</span>
+        </div>
+        <div class="multi-badge badge-seo hidden" id="badgeSeoWrap">
+          <span class="multi-badge-label">📈 SEO:</span>
+          <span class="multi-badge-val" id="badgeSeoScore">--/100</span>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Vector Cards -->
+      <div class="metrics-grid">
+        <div class="metric-chip chip-ssl" id="chipSsl">
+          <div class="chip-header">
+            <span class="chip-icon">🔒</span>
+            <span class="chip-title">SSL / TLS</span>
+          </div>
+          <div class="chip-value" id="valSsl">--</div>
+          <div class="chip-sub" id="subSsl">Cert validation</div>
+        </div>
+
+        <div class="metric-chip chip-headers" id="chipHeaders">
+          <div class="chip-header">
+            <span class="chip-icon">🛡️</span>
+            <span class="chip-title">Headers</span>
+          </div>
+          <div class="chip-value" id="valHeaders">--</div>
+          <div class="chip-sub" id="subHeaders">CSP, HSTS, XFO</div>
+        </div>
+
+        <div class="metric-chip chip-dns" id="chipDns">
+          <div class="chip-header">
+            <span class="chip-icon">🌐</span>
+            <span class="chip-title">DNS Sec</span>
+          </div>
+          <div class="chip-value" id="valDns">--</div>
+          <div class="chip-sub" id="subDns">SPF / DMARC</div>
+        </div>
+
+        <div class="metric-chip chip-threat" id="chipThreat">
+          <div class="chip-header">
+            <span class="chip-icon">📂</span>
+            <span class="chip-title">File Leaks</span>
+          </div>
+          <div class="chip-value" id="valThreat">--</div>
+          <div class="chip-sub" id="subThreat">.env, .git, backups</div>
+        </div>
+      </div>
+
+      <!-- Security Checklist Findings -->
+      <div class="findings-section">
+        <div class="section-title">
+          <span>Security Channels Breakdown</span>
+          <span class="section-badge">REAL-TIME</span>
+        </div>
+        <div id="findingsList" class="findings-list">
+          <!-- Dynamically populated checklist items -->
+        </div>
+      </div>
+
+      <!-- Action Buttons Footer -->
+      <div class="footer-actions">
+        <button id="btnDeepScan" class="btn btn-primary" title="Open full multi-vector interactive audit in web app">
+          <span>Open Full Analysis & Download Report</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

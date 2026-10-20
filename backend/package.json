@@ -1,0 +1,18 @@
+{
+  "name": "web-security-analyzer-backend",
+  "version": "1.0.0",
+  "description": "Zero-dependency URL Security & Phishing Detection System Backend",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "keywords": [
+    "security",
+    "phishing-detection",
+    "seo-audit",
+    "analyzer"
+  ],
+  "author": "",
+  "license": "ISC"
+}

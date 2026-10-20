@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecureIX — Architecture Diagrams & Data Flow (DFD / UFD)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Mermaid.js for real-time SVG diagram rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: #111726;
+      --card-border: #1e293b;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --accent-glow: rgba(56, 189, 248, 0.15);
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-subtle: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .bg-grid {
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    header {
+      background: rgba(17, 23, 38, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding: 16px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #0284c7, #38bdf8);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px var(--accent-glow);
+    }
+
+    .brand-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #fff;
+    }
+
+    .brand-badge {
+      font-size: 0.72rem;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--accent);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      color: var(--text);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(56, 189, 248, 0.05);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #090d16;
+      border-color: var(--accent);
+    }
+
+    .btn-primary:hover {
+      background: #7dd3fc;
+      color: #090d16;
+      box-shadow: 0 0 16px var(--accent-glow);
+    }
+
+    /* Tab Navigation */
+    .tab-nav {
+      display: flex;
+      gap: 8px;
+      padding: 16px 24px;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      padding: 10px 18px;
+      border-radius: 8px;
+      background: rgba(17, 23, 38, 0.6);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+      border-color: var(--border-subtle);
+    }
+
+    .tab-btn.active {
+      background: rgba(56, 189, 248, 0.12);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    main {
+      flex: 1;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 24px 48px;
+    }
+
+    .diagram-panel {
+      display: none;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+      margin-bottom: 24px;
+    }
+
+    .diagram-panel.active {
+      display: block;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .panel-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .panel-desc {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      margin-top: 4px;
+      max-width: 800px;
+    }
+
+    .diagram-canvas {
+      background: #0b1120;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 32px 16px;
+      overflow-x: auto;
+      display: flex;
+      justify-content: center;
+      min-height: 480px;
+      align-items: center;
+    }
+
+    .mermaid {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .detail-card {
+      background: #0b1120;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 16px 20px;
+    }
+
+    .detail-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .detail-card ul {
+      list-style-type: none;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .detail-card li {
+      margin-bottom: 6px;
+      padding-left: 14px;
+      position: relative;
+    }
+
+    .detail-card li::before {
+      content: "•";
+      color: var(--accent);
+      position: absolute;
+      left: 0;
+      font-weight: bold;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      font-size: 0.88rem;
+    }
+
+    .data-table th, .data-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .data-table th {
+      background: #0b1120;
+      color: var(--accent);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    .data-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .badge-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #38bdf8;
+    }
+
+    @media print {
+      header, .tab-nav, .controls {
+        display: none !important;
+      }
+      .diagram-panel {
+        display: block !important;
+        break-inside: avoid;
+        page-break-after: always;
+        box-shadow: none;
+        border: 1px solid #ccc;
+      }
+      body {
+        background: #fff;
+        color: #000;
+      }
+      .diagram-canvas {
+        background: #fff;
+        border: 1px solid #ddd;
+      }
+    }
+  </style>
+</head>
+<body class="bg-grid">
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="m9 12 2 2 4-4"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-title">SecureIX Architecture & Flow Diagrams</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted);">DFD (Level 0, 1, 2) & User Flow Diagrams (UFD)</div>
+      </div>
+      <span class="brand-badge">ACADEMIC SPECIFICATION</span>
+    </div>
+
+    <div class="controls">
+      <button class="btn" onclick="window.print()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 6 2 18 2 18 9"></polyline>
+          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+          <rect x="6" y="14" width="12" height="8"></rect>
+        </svg>
+        Print / Save PDF
+      </button>
+      <a href="../docs/DATA_FLOW_DIAGRAM_UDF.md" class="btn btn-primary" target="_blank">
+        <span>View Markdown</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+          <polyline points="15 3 21 3 21 9"></polyline>
+          <line x1="10" y1="14" x2="21" y2="3"></line>
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('tab-context', this)">1. Context DFD (Level 0)</button>
+    <button class="tab-btn" onclick="switchTab('tab-level1', this)">2. System DFD (Level 1)</button>
+    <button class="tab-btn" onclick="switchTab('tab-level2-gateway', this)">3. Gateway & Abuse Shield DFD (Level 2)</button>
+    <button class="tab-btn" onclick="switchTab('tab-level2-sec', this)">4. Security Engine DFD (Level 2)</button>
+    <button class="tab-btn" onclick="switchTab('tab-level2-seo', this)">5. SEO & TechStack DFD (Level 2)</button>
+    <button class="tab-btn" onclick="switchTab('tab-level2-bench', this)">6. Benchmark Engine DFD (Level 2)</button>
+    <button class="tab-btn" onclick="switchTab('tab-ufd', this)">7. User Flow Diagram (UFD)</button>
+    <button class="tab-btn" onclick="switchTab('tab-stores', this)">8. Data Stores & Dictionary</button>
+  </div>
+
+  <!-- Main Diagrams Container -->
+  <main>
+
+    <!-- Tab 1: Context Level 0 DFD -->
+    <div id="tab-context" class="diagram-panel active">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Level 0: Context Data Flow Diagram (Context DFD)</h2>
+          <p class="panel-desc">Illustrates the fundamental system boundary, external entities, and high-level input/output data flows.</p>
+        </div>
+      </div>
+      <div class="diagram-canvas">
+        <div class="mermaid">
+flowchart TD
+    E1([External Entity: End User or Analyst])
+    E2([External Entity: Target Web Host])
+    E3([External Entity: Authoritative DNS Servers])
+    E4([External Entity: Mozilla Observatory API])
+
+    System((0.0<br/>SecureIX Web Security<br/>System))
+
+    E1 -- "1. Target URL and Options" --> System
+    E1 -- "2. History and Trend Query" --> System
+    System -- "3. Security Audit Report" --> E1
+    System -- "4. Tech Stack and SEO Metrics" --> E1
+    System -- "5. Domain Trend Telemetry" --> E1
+
+    System -- "6. HTTP Probes and Redirects" --> E2
+    System -- "7. TLS Certificate Handshake" --> E2
+    System -- "8. Sensitive File Probes" --> E2
+    E2 -- "9. HTTP Headers and TLS Certificates" --> System
+
+    System -- "10. DNS Security Query" --> E3
+    E3 -- "11. DNS Resource Records" --> System
+
+    System -- "12. Benchmark Verification Query" --> E4
+    E4 -- "13. Observatory Grade and Score" --> System
+
+    classDef entity fill:#1e293b,stroke:#0ea5e9,stroke-width:2px,color:#fff;
+    classDef sys fill:#0f172a,stroke:#eab308,stroke-width:3px,color:#f8fafc;
+    class E1,E2,E3,E4 entity;
+    class System sys;
+        </div>
+      </div>
+
+      <div class="details-grid">
+        <div class="detail-card">
+          <div class="detail-title">External Entities</div>
+          <ul>
+            <li><strong>E1: End User / Analyst</strong> — Requests scans via Web Browser or Chrome Extension.</li>
+            <li><strong>E2: Target Web Host</strong> — The evaluated web property responding to HTTP, TLS, and probe requests.</li>
+            <li><strong>E3: Authoritative DNS Servers</strong> — Queried for CAA, SPF, DMARC, and DNSSEC records.</li>
+            <li><strong>E4: Mozilla Observatory API</strong> — Benchmarking standard compliance oracle.</li>
+          </ul>
+        </div>
+        <div class="detail-card">
+          <div class="detail-title">Boundary Safeguards</div>
+          <ul>
+            <li><strong>SSRF Defense</strong>: Rejects RFC 1918, loopback, and metadata IPs (e.g. 169.254.169.254).</li>
+            <li><strong>Input Sanitization</strong>: Restricts schemes exclusively to HTTP and HTTPS.</li>
+            <li><strong>Rate Limiting</strong>: Sliding-window throttle protecting system availability.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Level 1 System DFD -->
+    <div id="tab-level1" class="diagram-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Level 1: System-Wide Data Flow Diagram (Level 1 DFD)</h2>
+          <p class="panel-desc">Decomposes the system into functional core sub-processes, data stores, and internal communication paths.</p>
+        </div>
+      </div>
+      <div class="diagram-canvas">
+        <div class="mermaid">
+flowchart TB
+    E1([End User or Client])
+    E2([Target Web Host])
+    E3([DNS Servers])
+    E4([Mozilla Observatory API])
+
+    subgraph SecureIX_Boundary ["SecureIX Backend System Boundary"]
+        P1["1.0 Request Dispatcher and Abuse Shield"]
+        P2["2.0 Multi-Vector Security Scan Engine"]
+        P3["3.0 Tech Stack and Hosting Detector"]
+        P4["4.0 SEO and Lighthouse Auditor"]
+        P5["5.0 Benchmark Comparison Engine"]
+        P6["6.0 History and Analytics Store Manager"]
+
+        D1[("D1 - Scan History Store")]
+        D2[("D2 - SEO History Store")]
+        D3[("D3 - Domain Trends Store")]
+    end
+
+    E1 -- "Inbound Request with URL and Options" --> P1
+    P1 -- "Sanitized Target URL" --> P2
+    P1 -- "Target URL" --> P3
+    P1 -- "Target URL" --> P4
+    P1 -- "Target URL" --> P5
+    P1 -- "Query History or Trend" --> P6
+
+    P2 -- "Probes for TLS Headers and Files" --> E2
+    E2 -- "HTTP Headers and TLS Cert and Files" --> P2
+    P2 -- "Query CAA and SPF and DMARC and DNSSEC" --> E3
+    E3 -- "DNS Resource Records" --> P2
+    P3 -- "Inspect Server Headers and Scripts" --> E2
+    E2 -- "HTML Footprints and Signatures" --> P3
+    P4 -- "Crawler Stream Request" --> E2
+    E2 -- "Raw HTML Body Stream" --> P4
+    P5 -- "Observatory API Query" --> E4
+    E4 -- "Benchmark Compliance Score" --> P5
+
+    P2 -- "Store Scan Record" --> D1
+    P2 -- "Record Domain Score" --> D3
+    P4 -- "Store SEO Record" --> D2
+    P6 -- "Read Scan Logs" --> D1
+    D1 -- "Scan History Data" --> P6
+    P6 -- "Read SEO Logs" --> D2
+    D2 -- "SEO History Data" --> P6
+    P6 -- "Read Time-Series Data" --> D3
+    D3 -- "Domain Trend Points" --> P6
+
+    P2 -- "Security Report" --> E1
+    P3 -- "Tech Stack Profile" --> E1
+    P4 -- "SEO Audit Report" --> E1
+    P5 -- "Benchmark Comparison" --> E1
+    P6 -- "Historical Trend Data" --> E1
+
+    classDef entity fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#fff;
+    classDef process fill:#0f172a,stroke:#22c55e,stroke-width:2px,color:#fff;
+    classDef store fill:#312e81,stroke:#a855f7,stroke-width:2px,color:#fff;
+    class E1,E2,E3,E4 entity;
+    class P1,P2,P3,P4,P5,P6 process;
+    class D1,D2,D3 store;
+        </div>
+      </div>
+
+      <div class="details-grid">
+        <div class="detail-card">
+          <div class="detail-title">Subsystems (Processes)</div>
+          <ul>
+            <li><strong>P1.0 Router & Abuse Shield</strong>: Validates URLs, enforces SSRF rules and rate limits.</li>
+            <li><strong>P2.0 Security Engine</strong>: Performs multi-vector auditing and computes 0-100 score.</li>
+            <li><strong>P3.0 Tech Stack Detector</strong>: Identifies servers, CMS, and CDN fingerprints.</li>
+            <li><strong>P4.0 SEO Auditor</strong>: Evaluates HTML structure, OpenGraph, and Lighthouse metrics.</li>
+            <li><strong>P5.0 Benchmark Engine</strong>: Compares SecureIX's score against the Mozilla Observatory standard.</li>
+            <li><strong>P6.0 History Store Manager</strong>: Coordinates in-memory time-series repositories.</li>
+          </ul>
+        </div>
+        <div class="detail-card">
+          <div class="detail-title">Data Stores</div>
+          <ul>
+            <li><strong>D1 (Scan History)</strong>: 50-item circular buffer storing recent URL security scans.</li>
+            <li><strong>D2 (SEO History)</strong>: Circular buffer persisting SEO performance audits.</li>
+            <li><strong>D3 (Domain Trends)</strong>: Time-series historical security scores per domain.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 3: Level 2 Gateway & Abuse Shield DFD -->
+    <div id="tab-level2-gateway" class="diagram-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Level 2: API Gateway & Abuse Shield (P1.0 Decomposition)</h2>
+          <p class="panel-desc">Explodes Process 1.0 into the request dispatcher, SSRF/input validation guard, sliding-window rate limiter, and static asset fallback.</p>
+        </div>
+      </div>
+      <div class="diagram-canvas">
+        <div class="mermaid">
+flowchart TD
+    InReq(["Input: Raw HTTP Request"])
+
+    subgraph GatewayEngine ["Process 1.0 - Request Dispatcher and Abuse Shield"]
+        P1_1["1.1 Security Header Injector"]
+        P1_2["1.2 CORS Policy Handler"]
+        P1_3["1.3 Path and Method Router"]
+        P1_4["1.4 SSRF and URL Validator"]
+        P1_5["1.5 Sliding-Window Rate Limiter"]
+        P1_6["1.6 Static Asset and SPA Fallback"]
+    end
+
+    OutHealth(["To Health Controller"])
+    OutScan(["To 2.0 Security Scan Engine"])
+    OutTech(["To 3.0 Tech Stack Detector"])
+    OutSeo(["To 4.0 SEO Auditor"])
+    OutBench(["To 5.0 Benchmark Engine"])
+    OutHistory(["To 6.0 History Store Manager"])
+    OutStatic(["Static HTML/CSS/JS Assets"])
+    OutErr(["Output: 400/403/429 Error Response"])
+
+    InReq --> P1_1
+    P1_1 -- "Apply nosniff, DENY, CSP, Referrer-Policy" --> P1_2
+    P1_2 -- "Apply Access-Control-Allow-Origin and Methods" --> P1_3
+
+    P1_3 -- "GET /api/health" --> OutHealth
+    P1_3 -- "GET /api/history and /api/history/trend" --> OutHistory
+    P1_3 -- "GET /api/scan or /api/techstack or /api/seo/analyze or /api/benchmark" --> P1_5
+    P1_3 -- "Unmatched Path" --> P1_6
+    P1_6 -- "Serve index.html or static file" --> OutStatic
+
+    P1_5 -- "Increment IP Bucket in Sliding Window" --> P1_5
+    P1_5 -- "Count Exceeds maxRequests" --> OutErr
+    P1_5 -- "Within Threshold: Attach X-RateLimit Headers" --> P1_4
+
+    P1_4 -- "Reject javascript/file/ftp Schemes" --> OutErr
+    P1_4 -- "Reject Script Injection or Union-Select Payloads" --> OutErr
+    P1_4 -- "Reject RFC 1918, Loopback, 169.254.169.254 Metadata IP" --> OutErr
+    P1_4 -- "Validated and Normalized URL" --> OutScan
+    P1_4 -- "Validated and Normalized URL" --> OutTech
+    P1_4 -- "Validated and Normalized URL" --> OutSeo
+    P1_4 -- "Validated and Normalized URL" --> OutBench
+
+    classDef process fill:#0f172a,stroke:#22c55e,stroke-width:2px,color:#fff;
+    classDef io fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#fff;
+    classDef err fill:#3b0f16,stroke:#ef4444,stroke-width:2px,color:#fff;
+    class P1_1,P1_2,P1_3,P1_4,P1_5,P1_6 process;
+    class InReq,OutHealth,OutScan,OutTech,OutSeo,OutBench,OutHistory,OutStatic io;
+    class OutErr err;
+        </div>
+      </div>
+
+      <div class="details-grid">
+        <div class="detail-card">
+          <div class="detail-title">Gateway Responsibilities</div>
+          <ul>
+            <li><strong>1.1 Header Injector</strong>: Sets nosniff, X-Frame-Options DENY, XSS-Protection, COOP, and CSP on every response.</li>
+            <li><strong>1.2 CORS Handler</strong>: Wildcard origin, GET/POST/OPTIONS, and short-circuits preflight OPTIONS with 204.</li>
+            <li><strong>1.3 Router</strong>: Matches pathname/method to /api/health, /api/scan, /api/techstack, /api/benchmark, /api/history(/trend), /api/seo/analyze(/history), else static fallback.</li>
+            <li><strong>1.4 SSRF/URL Validator</strong>: Blocks dangerous schemes, injection payloads, 2048-char overflow, and private/loopback/metadata IP ranges before any outbound probe.</li>
+            <li><strong>1.5 Rate Limiter</strong>: In-memory sliding-window bucket per client IP with periodic stale-bucket eviction and Retry-After signaling.</li>
+          </ul>
+        </div>
+        <div class="detail-card">
+          <div class="detail-title">Rejected Request Outcomes</div>
+          <ul>
+            <li><strong>429 Too Many Requests</strong>: Rate limit bucket exceeded; includes Retry-After and window metadata.</li>
+            <li><strong>400 Bad Request</strong>: Malformed URL, disallowed scheme, or injection payload detected.</li>
+            <li><strong>403-class Policy Violation</strong>: SSRF protection blocks private/internal/loopback or cloud metadata targets.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 4: Level 2 Security Engine DFD -->
+    <div id="tab-level2-sec" class="diagram-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Level 2: Security Scan Engine (P2.0 Decomposition)</h2>
+          <p class="panel-desc">Explodes Process 2.0 into the concurrent multi-vector probing and grading components.</p>
+        </div>
+      </div>
+      <div class="diagram-canvas">
+        <div class="mermaid">
+flowchart TD
+    InURL(["Input: Sanitized Target URL"])
+
+    subgraph SecEngine ["Process 2.0 - Multi-Vector Security Scan Engine"]
+        P2_1["2.1 URL Heuristic and Phishing Analyzer"]
+        P2_2["2.2 Network and HTTP Redirect Follower"]
+        P2_3["2.3 TLS-SSL Certificate Extractor"]
+        P2_4["2.4 DNS Security Analyzer"]
+        P2_5["2.5 Sensitive File Exposure Scanner"]
+        P2_6["2.6 Cookie and CORS Policy Inspector"]
+        P2_7["2.7 Multi-Channel Security Evaluator and Scorer"]
+    end
+
+    E2_Host([Target Web Host])
+    E3_DNS([DNS Name Servers])
+    OutReport(["Output: Comprehensive Security Report"])
+    D1_Store[("D1 - Scan History")]
+    D3_Store[("D3 - Domain Trends")]
+
+    InURL --> P2_1
+    InURL --> P2_2
+
+    P2_2 -- "HTTP GET or HEAD Request" --> E2_Host
+    E2_Host -- "HTTP Status and Headers" --> P2_2
+
+    P2_2 -- "Resolved Hostname and Protocol" --> P2_3
+    P2_2 -- "Resolved Hostname" --> P2_4
+    P2_2 -- "Final Base URL" --> P2_5
+    P2_2 -- "Response Headers" --> P2_6
+
+    P2_3 -- "tls.connect Handshake" --> E2_Host
+    E2_Host -- "X.509 Certificate Chain" --> P2_3
+
+    P2_4 -- "Query CAA and SPF and DMARC" --> E3_DNS
+    E3_DNS -- "DNS Security Records" --> P2_4
+
+    P2_5 -- "Probe Paths for env and git" --> E2_Host
+    E2_Host -- "Probe HTTP Status Codes" --> P2_5
+
+    P2_1 -- "URL Entropy and Spoof Score" --> P2_7
+    P2_2 -- "Redirect Chain and Status" --> P2_7
+    P2_3 -- "Cert Validity and Cipher and Expiry" --> P2_7
+    P2_4 -- "CAA and SPF and DMARC Findings" --> P2_7
+    P2_5 -- "Exposed Files List" --> P2_7
+    P2_6 -- "Cookie Flags and CORS Rigidity" --> P2_7
+
+    P2_7 -- "Calculate Weighted Score and Grade" --> OutReport
+    P2_7 -- "Append Scan Entry" --> D1_Store
+    P2_7 -- "Update Trend Line" --> D3_Store
+
+    classDef entity fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#fff;
+    classDef process fill:#0f172a,stroke:#22c55e,stroke-width:2px,color:#fff;
+    classDef store fill:#312e81,stroke:#a855f7,stroke-width:2px,color:#fff;
+    class E2_Host,E3_DNS entity;
+    class P2_1,P2_2,P2_3,P2_4,P2_5,P2_6,P2_7 process;
+    class D1_Store,D3_Store store;
+        </div>
+      </div>
+
+      <div class="details-grid">
+        <div class="detail-card">
+          <div class="detail-title">Security Evaluation Channels</div>
+          <ul>
+            <li><strong>SSL/TLS Posture</strong>: Expiration date, SAN list, cipher suite strength.</li>
+            <li><strong>HTTP Defense Headers</strong>: HSTS, CSP, X-Frame-Options, X-Content-Type-Options.</li>
+            <li><strong>DNSSEC & Email Auth</strong>: CAA authorization, SPF directives, DMARC policy.</li>
+            <li><strong>Cookie & CORS</strong>: HttpOnly, Secure, SameSite, and wildcard Origin checks.</li>
+            <li><strong>Heuristic Spoofing</strong>: Punycode homograph, entropy, and brand name mimicking.</li>
+          </ul>
+        </div>
+        <div class="detail-card">
+          <div class="detail-title">Grading Scale (P2.7)</div>
+          <ul>
+            <li><strong>Score 90–100</strong>: Grade A+ / A (EXCELLENT / VERY SECURE)</li>
+            <li><strong>Score 80–89</strong>: Grade B (GOOD / SECURE)</li>
+            <li><strong>Score 65–79</strong>: Grade C (FAIR / HARDENING RECOMMENDED)</li>
+            <li><strong>Score 50–64</strong>: Grade D (POOR / VULNERABILITIES DETECTED)</li>
+            <li><strong>Score 0–49</strong>: Grade F (CRITICAL / HIGH RISK POSTURE)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 5: Level 2 SEO & TechStack DFD -->
+    <div id="tab-level2-seo" class="diagram-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Level 2: SEO & Tech Stack Engine (P3.0 & P4.0 Decomposition)</h2>
+          <p class="panel-desc">Explodes the lightweight crawler, native regex HTML parser, and signature-matching modules.</p>
+        </div>
+      </div>
+      <div class="diagram-canvas">
+        <div class="mermaid">
+flowchart LR
+    TargetURL(["Sanitized Target URL"])
+
+    subgraph SubEngine ["Processes 3.0 and 4.0 - SEO and Tech Stack Pipeline"]
+        Crawler["Crawler and Stream Fetcher"]
+        Parser["HTML Parser and DOM Extractor"]
+        TechMatcher["Tech Signature Matcher"]
+        SEOScorer["SEO Scoring Engine"]
+        LHSim["Simulated Lighthouse Auditor"]
+    end
+
+    TargetHost([Target Server])
+    D2_SEO[("D2 - SEO History")]
+    ClientOut(["Audit Results Payload"])
+
+    TargetURL --> Crawler
+    Crawler -- "Fetch Page Request" --> TargetHost
+    TargetHost -- "Raw HTML Body Stream" --> Crawler
+
+    Crawler -- "Raw HTML and Headers" --> Parser
+    Crawler -- "Response Headers" --> TechMatcher
+
+    Parser -- "Meta Tags and Scripts and Links" --> TechMatcher
+    Parser -- "DOM Structure and Headings and Alt Tags" --> SEOScorer
+    Parser -- "Resource Hints and Scripts Count" --> LHSim
+
+    TechMatcher -- "Detected CMS and CDN and Web Server" --> ClientOut
+    SEOScorer -- "SEO Score and Checklist" --> ClientOut
+    LHSim -- "Performance and Best Practices Score" --> ClientOut
+    SEOScorer -- "Save Audit Record" --> D2_SEO
+
+    classDef entity fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#fff;
+    classDef process fill:#0f172a,stroke:#22c55e,stroke-width:2px,color:#fff;
+    classDef store fill:#312e81,stroke:#a855f7,stroke-width:2px,color:#fff;
+    class TargetHost entity;
+    class Crawler,Parser,TechMatcher,SEOScorer,LHSim process;
+    class D2_SEO store;
+        </div>
+      </div>
+
+      <div class="details-grid">
+        <div class="detail-card">
+          <div class="detail-title">Detected Technology Stacks</div>
+          <ul>
+            <li><strong>Web Servers</strong>: Nginx, Apache, Cloudflare, Caddy, IIS.</li>
+            <li><strong>CMS & Platforms</strong>: WordPress, Shopify, Next.js, Ghost, Drupal.</li>
+            <li><strong>Frontend Tooling</strong>: React, Vue, Svelte, Tailwind, jQuery.</li>
+            <li><strong>Hosting Providers</strong>: AWS CloudFront, Vercel, Netlify, Fastly.</li>
+          </ul>
+        </div>
+        <div class="detail-card">
+          <div class="detail-title">SEO Audit Vectors</div>
+          <ul>
+            <li><strong>Meta & Headings</strong>: Title tag length, description, H1/H2 hierarchy.</li>
+            <li><strong>Open Graph & Twitter</strong>: og:title, og:image, twitter:card tags.</li>
+            <li><strong>Crawlability</strong>: Canonical tags, robots.txt directives, indexability.</li>
+            <li><strong>Performance Simulation</strong>: Inline styles count, uncompressed scripts.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 6: Level 2 Benchmark Engine DFD -->
+    <div id="tab-level2-bench" class="diagram-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Level 2: Benchmark Comparison Engine (P5.0 Decomposition)</h2>
+          <p class="panel-desc">Explodes Process 5.0 into the live Mozilla Observatory query, local fallback evaluator, and side-by-side comparison matrix builder.</p>
+        </div>
+      </div>
+      <div class="diagram-canvas">
+        <div class="mermaid">
+flowchart TD
+    InURL(["Input: Validated Target URL"])
+
+    subgraph BenchEngine ["Process 5.0 - Benchmark Comparison Engine"]
+        P5_1["5.1 SecureIX Full Scan Invoker"]
+        P5_2["5.2 Mozilla Observatory Live API Client"]
+        P5_3["5.3 Local Observatory Standard Evaluator (Fallback)"]
+        P5_4["5.4 Comparison Matrix Builder"]
+    end
+
+    P2["2.0 Multi-Vector Security Scan Engine"]
+    E4([Mozilla Observatory API])
+    OutBench(["Output: Side-by-Side Benchmark Report"])
+
+    InURL --> P5_1
+    P5_1 -- "performScan(url)" --> P2
+    P2 -- "SecureIX Report: Score, Grade, Channels, DNS/Cert/Cookie Info" --> P5_1
+
+    P5_1 -- "Resolved Hostname" --> P5_2
+    P5_2 -- "POST /api/v1/analyze?host= (3.5s timeout)" --> E4
+    E4 -- "Grade, Score, Scan ID, Algorithm Version" --> P5_2
+
+    P5_2 -- "API Timeout / Error / Null Response" --> P5_3
+    P5_3 -- "Penalize Missing CSP, HSTS, XFO, XCTO, Referrer-Policy, Insecure Cookies, Non-HTTPS" --> P5_4
+    P5_2 -- "Live Observatory Score and Grade" --> P5_4
+    P5_1 -- "SecureIX Score and Grade" --> P5_4
+
+    P5_4 -- "Compute Score Delta and Verdict" --> P5_4
+    P5_4 -- "Build 6-Dimension Matrix: Headers, Phishing, DNS, Sensitive Files, Cookie/CORS, TLS" --> OutBench
+
+    classDef process fill:#0f172a,stroke:#22c55e,stroke-width:2px,color:#fff;
+    classDef entity fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#fff;
+    classDef io fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#fff;
+    class P5_1,P5_2,P5_3,P5_4 process;
+    class P2,E4 entity;
+    class InURL,OutBench io;
+        </div>
+      </div>
+
+      <div class="details-grid">
+        <div class="detail-card">
+          <div class="detail-title">Benchmark Pipeline</div>
+          <ul>
+            <li><strong>5.1 Scan Invoker</strong>: Reuses P2.0's full performScan() to obtain a SecureIX score, grade, and channel data with no duplicate probing.</li>
+            <li><strong>5.2 Live API Client</strong>: POSTs to http-observatory.security.mozilla.org with a 3.5s timeout for near real-time responsiveness.</li>
+            <li><strong>5.3 Local Fallback Evaluator</strong>: Reimplements the Mozilla Observatory scoring spec (CSP -25, HSTS -20, XFO -20, XCTO -5, Referrer-Policy -5, Cookies -10, HTTPS -20) when the live API is throttled or unreachable.</li>
+            <li><strong>5.4 Matrix Builder</strong>: Produces a 6-dimension comparison covering header hardening, phishing heuristics, DNS anti-spoofing, sensitive file exposure, cookie/CORS policy, and TLS handshake health.</li>
+          </ul>
+        </div>
+        <div class="detail-card">
+          <div class="detail-title">Comparison Verdicts</div>
+          <ul>
+            <li><strong>Positive Delta</strong>: SecureIX scored higher, typically credited to DNS/TLS/phishing checks Observatory omits.</li>
+            <li><strong>Negative Delta</strong>: Observatory penalized headers more heavily; SecureIX still reports added perimeter vectors.</li>
+            <li><strong>Zero Delta</strong>: Both engines align on overall security posture.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 7: User Flow Diagram (UFD) -->
+    <div id="tab-ufd" class="diagram-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">User Flow Diagram (UFD) / Sequence Specification</h2>
+          <p class="panel-desc">Visualizes the chronological execution timeline, decision forks, and client-server interactions.</p>
+        </div>
+      </div>
+      <div class="diagram-canvas">
+        <div class="mermaid">
+sequenceDiagram
+    autonumber
+    actor User as Security Researcher or User
+    participant Frontend as Web Client or Chrome Extension
+    participant Router as API Gateway and Abuse Filter
+    participant Security as Security Scan Orchestrator
+    participant TechSEO as TechStack and SEO Engines
+    participant Storage as In-Memory Storage
+
+    User->>Frontend: Enters target URL or clicks Active Tab
+    User->>Frontend: Selects scan options (Include TechStack or SEO)
+    Frontend->>Router: GET /api/scan?url=target
+    
+    rect rgb(20, 20, 35)
+        Note over Router: Perimeter Defense Checks
+        Router->>Router: Validate protocol (HTTP or HTTPS only)
+        Router->>Router: Check length and sanitize injection payloads
+        Router->>Router: Check SSRF Filter (Block RFC 1918 and loopbacks)
+        Router->>Router: Sliding-window Rate Limit check
+    end
+
+    alt SSRF or Invalid URL Detected
+        Router-->>Frontend: 400 Bad Request or 403 Forbidden
+        Frontend-->>User: Displays error notification and threat shield warning
+    else Validation Successful
+        par Concurrent Security Scanning
+            Router->>Security: Execute performScan(targetUrl)
+            Security->>Security: Fetch redirects and inspect headers
+            Security->>Security: Parallel TLS cert check and DNS records lookup
+            Security->>Security: Probe sensitive paths (.env, .git)
+            Security->>Security: Evaluate 10 security channels and compute score
+            Security->>Storage: Store scan record in D1 and D3
+        and Concurrent Tech and SEO
+            Router->>TechSEO: Detect tech stack
+            Router->>TechSEO: Crawl HTML and compute SEO metrics
+            TechSEO->>Storage: Store SEO record in D2
+        end
+
+        Security-->>Frontend: Security posture report (Score, Grade, Findings)
+        TechSEO-->>Frontend: Tech stack tags and SEO metrics
+        Frontend-->>User: Renders Neo-Brutalist cards and metrics chips
+    end
+
+    opt Exporting Audit Results
+        User->>Frontend: Clicks Download PDF Report
+        Frontend->>Frontend: Client-side jsPDF renders branded security dossier
+        Frontend-->>User: Downloads PDF file
+    end
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 8: Data Stores & Dictionary -->
+    <div id="tab-stores" class="diagram-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Data Stores & Data Dictionary Specification</h2>
+          <p class="panel-desc">Formal definitions of storage structures, capacity limits, and system data flows.</p>
+        </div>
+      </div>
+
+      <h3 style="color: var(--accent); margin-bottom: 8px;">1. In-Memory Data Stores</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Store ID</th>
+            <th>Name</th>
+            <th>Implementation</th>
+            <th>Eviction Policy</th>
+            <th>Capacity</th>
+            <th>Schema Attributes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge-code">D1</span></td>
+            <td>Scan History Store</td>
+            <td>In-Memory Array</td>
+            <td>FIFO (First-In, First-Out)</td>
+            <td>50 records</td>
+            <td><code>timestamp, requestedUrl, finalUrl, score, grade, classification</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge-code">D2</span></td>
+            <td>SEO History Store</td>
+            <td>In-Memory Array</td>
+            <td>FIFO (First-In, First-Out)</td>
+            <td>50 records</td>
+            <td><code>timestamp, url, overallScore, categoryScores, metrics</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge-code">D3</span></td>
+            <td>Domain Trends Store</td>
+            <td>In-Memory Key-Value Map</td>
+            <td>Append-only time-series</td>
+            <td>Unbounded</td>
+            <td><code>domain -> [{ timestamp, score, grade }]</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 style="color: var(--accent); margin-top: 32px; margin-bottom: 8px;">2. Data Flow Dictionary</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Flow Name</th>
+            <th>Origin</th>
+            <th>Destination</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge-code">Target_URL_Input</span></td>
+            <td>Client (E1)</td>
+            <td>Process 1.0</td>
+            <td>String (URL)</td>
+            <td>User-entered or active-tab target domain to scan.</td>
+          </tr>
+          <tr>
+            <td><span class="badge-code">Sanitized_Target</span></td>
+            <td>Process 1.0</td>
+            <td>Processes 2.0, 3.0, 4.0, 5.0</td>
+            <td>Normalized URL</td>
+            <td>Vetted URL with protocol validated and internal IP ranges blocked.</td>
+          </tr>
+          <tr>
+            <td><span class="badge-code">TLS_Certificate_Data</span></td>
+            <td>Host (E2)</td>
+            <td>Process 2.3</td>
+            <td>X.509 Object</td>
+            <td>Subject, issuer, expiration timestamp, SAN array, and TLS protocol.</td>
+          </tr>
+          <tr>
+            <td><span class="badge-code">DNS_Security_Records</span></td>
+            <td>DNS Servers (E3)</td>
+            <td>Process 2.4</td>
+            <td>Resource Records</td>
+            <td>CAA records, SPF string, DMARC TXT record, DNSSEC RRSIG.</td>
+          </tr>
+          <tr>
+            <td><span class="badge-code">Audit_Report_Payload</span></td>
+            <td>Process 2.0</td>
+            <td>Client (E1)</td>
+            <td>JSON Object</td>
+            <td>Calculated security score, grade, category channels, and findings list.</td>
+          </tr>
+          <tr>
+            <td><span class="badge-code">Rate_Limit_Status</span></td>
+            <td>Process 1.5 (Rate Limiter)</td>
+            <td>Client (E1)</td>
+            <td>HTTP Headers</td>
+            <td>X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, Retry-After.</td>
+          </tr>
+          <tr>
+            <td><span class="badge-code">Benchmark_Comparison_Payload</span></td>
+            <td>Process 5.0</td>
+            <td>Client (E1)</td>
+            <td>JSON Object</td>
+            <td>SecureIX vs Mozilla Observatory scores, grade delta, verdict, and 6-dimension matrix.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+
+  <!-- Script to handle Mermaid and Tabs -->
+  <script>
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'dark',
+      themeVariables: {
+        darkMode: true,
+        background: '#0b1120',
+        primaryColor: '#0ea5e9',
+        primaryTextColor: '#f8fafc',
+        primaryBorderColor: '#38bdf8',
+        lineColor: '#64748b',
+        secondaryColor: '#1e293b',
+        tertiaryColor: '#0f172a'
+      },
+      flowchart: {
+        curve: 'basis',
+        nodeSpacing: 45,
+        rankSpacing: 45
+      }
+    });
+
+    // Cache original raw mermaid source code for on-demand rendering
+    const rawMermaidSource = new Map();
+    const renderedTabs = new Set();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.diagram-panel').forEach(panel => {
+        const mEl = panel.querySelector('.mermaid');
+        if (mEl) {
+          rawMermaidSource.set(panel.id, mEl.textContent.trim());
+        }
+      });
+      // Render first tab
+      renderTabDiagram('tab-context');
+    });
+
+    async function renderTabDiagram(tabId) {
+      const panel = document.getElementById(tabId);
+      if (!panel || renderedTabs.has(tabId)) return;
+
+      const mermaidEl = panel.querySelector('.mermaid');
+      const rawCode = rawMermaidSource.get(tabId);
+      if (mermaidEl && rawCode) {
+        try {
+          const id = 'svg_' + tabId.replace(/-/g, '_');
+          const { svg } = await mermaid.render(id, rawCode);
+          mermaidEl.innerHTML = svg;
+          renderedTabs.add(tabId);
+        } catch (err) {
+          console.error("Failed rendering diagram for tab " + tabId, err);
+          mermaidEl.innerHTML = '<div style="color:#ef4444; padding:20px; text-align:center;">Syntax error in diagram: ' + err.message + '</div>';
+        }
+      }
+    }
+
+    async function switchTab(tabId, btnElement) {
+      document.querySelectorAll('.diagram-panel').forEach(panel => {
+        panel.classList.remove('active');
+      });
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      const activePanel = document.getElementById(tabId);
+      if (activePanel) {
+        activePanel.classList.add('active');
+      }
+
+      if (btnElement) {
+        btnElement.classList.add('active');
+      }
+
+      await renderTabDiagram(tabId);
+    }
+  </script>
+</body>
+</html>
