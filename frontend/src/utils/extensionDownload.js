@@ -4,6 +4,10 @@ import popupHtml from "../../../extension/popup.html?raw";
 import popupCss from "../../../extension/popup.css?raw";
 import popupJs from "../../../extension/popup.js?raw";
 import readme from "../../../extension/README.md?raw";
+import icon16 from "../../../extension/icons/icon16.png?url";
+import icon32 from "../../../extension/icons/icon32.png?url";
+import icon48 from "../../../extension/icons/icon48.png?url";
+import icon128 from "../../../extension/icons/icon128.png?url";
 
 const encoder = new TextEncoder();
 
@@ -33,7 +37,7 @@ function createZip(files) {
 
   for (const file of files) {
     const name = encoder.encode(file.name);
-    const data = encoder.encode(file.content);
+    const data = typeof file.content === "string" ? encoder.encode(file.content) : file.content;
     const crc = crc32(data);
     const localHeader = new ArrayBuffer(30 + name.length);
     const localView = new DataView(localHeader);
@@ -79,12 +83,19 @@ function createZip(files) {
   });
 }
 
-export function downloadExtension() {
+const iconUrls = { 16: icon16, 32: icon32, 48: icon48, 128: icon128 };
+
+export async function downloadExtension() {
   const manifest = JSON.parse(manifestSource);
-  delete manifest.icons;
-  delete manifest.action.default_icon;
+  const icons = await Promise.all(
+    Object.entries(iconUrls).map(async ([size, url]) => ({
+      name: `icons/icon${size}.png`,
+      content: new Uint8Array(await (await fetch(url)).arrayBuffer()),
+    })),
+  );
 
   const files = [
+    ...icons,
     { name: "manifest.json", content: JSON.stringify(manifest, null, 2) },
     { name: "background.js", content: background },
     { name: "popup.html", content: popupHtml },

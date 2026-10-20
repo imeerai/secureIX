@@ -3,8 +3,8 @@
  * Neo-Brutalist Theme with 3-in-1 Multi-Engine Scanning
  */
 
-const DEFAULT_API_URL = 'http://localhost:3000';
-const DEFAULT_FRONTEND_URL = 'http://localhost:5173';
+const DEFAULT_API_URL = 'https://secureix-backend.vercel.app';
+const DEFAULT_FRONTEND_URL = 'https://secure-ix.vercel.app';
 
 let activeTabUrl = '';
 let currentTargetUrl = '';
@@ -74,8 +74,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function loadStoredConfig() {
   if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
     const data = await chrome.storage.local.get(['apiUrl', 'frontendUrl', 'chkTech', 'chkSeo']);
-    if (data.apiUrl) backendBaseUrl = data.apiUrl;
-    if (data.frontendUrl) frontendBaseUrl = data.frontendUrl;
+    // Ignore old localhost settings saved before the Vercel deploy
+    if (data.apiUrl && !data.apiUrl.includes('localhost')) backendBaseUrl = data.apiUrl;
+    if (data.frontendUrl && !data.frontendUrl.includes('localhost')) frontendBaseUrl = data.frontendUrl;
     if (data.chkTech !== undefined && chkTechStack) chkTechStack.checked = data.chkTech;
     if (data.chkSeo !== undefined && chkSeo) chkSeo.checked = data.chkSeo;
   }
@@ -234,7 +235,7 @@ async function runMultiScan(targetUrl) {
 
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 7000);
+    const timeoutId = setTimeout(() => controller.abort(), 25000);
 
     const promises = [
       fetch(`${backendBaseUrl}/api/scan?url=${encodeURIComponent(targetUrl)}`, { signal: controller.signal })

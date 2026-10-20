@@ -1,15 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
-  <defs>
-    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#10B981" />
-      <stop offset="100%" stop-color="#06B6D4" />
-    </linearGradient>
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0F172A" />
-      <stop offset="100%" stop-color="#020617" />
-    </linearGradient>
-  </defs>
-  <rect width="128" height="128" rx="28" fill="url(#bgGrad)" stroke="#334155" stroke-width="2"/>
-  <path d="M64 22L92 34V62C92 84 64 104 64 104C64 104 36 84 36 62V34L64 22Z" fill="url(#shieldGrad)" />
-  <path d="M64 42L76 54L58 72L48 62L53 57L58 62L71 49L64 42Z" fill="#FFFFFF"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <rect x="5" y="5" width="118" height="118" rx="26" fill="#86efac" stroke="#000" stroke-width="8"/>
+  <g transform="translate(24 24) scale(3.333)" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+    <path d="m9 12 2 2 4-4"/>
+  </g>
 </svg>

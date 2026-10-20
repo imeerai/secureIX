@@ -35,6 +35,16 @@ export default function App() {
     }
   }, [scanner.status, fetchHistory]);
 
+  // Auto-scan when opened from the extension: /?scan=<url>
+  useEffect(() => {
+    const target = new URLSearchParams(window.location.search).get('scan');
+    if (target) {
+      handleScanUrl(target);
+      setTimeout(() => document.getElementById('scanner')?.scrollIntoView({ behavior: 'smooth' }), 300);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleScrollToScanner = () => {
     const el = document.getElementById('scanner');
     if (el) {
