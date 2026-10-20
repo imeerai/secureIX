@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://secure-ix.vercel.app/sitemap.xml

@@ -2,16 +2,46 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SecurIX — Real-Time URL Security & Phishing Detector</title>
     <meta name="description" content="Instant URL security scanner. Inspect TLS certificates, CSP, HSTS, clickjacking, and phishing heuristics with automated AI threat intelligence." />
+    <link rel="canonical" href="https://secure-ix.vercel.app/" />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="SecurIX — Real-Time URL Security & Phishing Detector" />
+    <meta property="og:description" content="Instant URL security scanner for TLS, headers, phishing signals, hosting technology, and technical SEO." />
+    <meta property="og:url" content="https://secure-ix.vercel.app/" />
+    <meta property="og:site_name" content="SecurIX" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="SecurIX — Real-Time URL Security & Phishing Detector" />
+    <meta name="twitter:description" content="Instant URL security scanner for TLS, headers, phishing signals, hosting technology, and technical SEO." />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "SecurIX",
+        "url": "https://secure-ix.vercel.app/",
+        "description": "Real-time URL security, phishing, hosting technology, and technical SEO scanner.",
+        "applicationCategory": "SecurityApplication",
+        "operatingSystem": "Web"
+      }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   </head>
   <body class="antialiased selection:bg-yellow-200 selection:text-black">
     <div id="root"></div>
+    <noscript>
+      <main>
+        <h1>SecurIX Real-Time URL Security and Phishing Detector</h1>
+        <p>SecurIX is a browser-based website security scanner for developers, security teams, and site owners. Enter a public URL to inspect its security posture, transport protection, HTTP response headers, hosting technology, and technical SEO signals.</p>
+        <p>The security audit checks HTTPS, TLS certificate details, HSTS, Content Security Policy, clickjacking protection, MIME sniffing controls, referrer privacy, permissions policy, cookies, CORS, DNS email protection, and common phishing indicators. It also checks for accidentally exposed sensitive files such as environment files, Git metadata, and backup archives.</p>
+        <p>Alongside the security report, SecurIX identifies hosting providers, CDNs, frontend frameworks, backend platforms, and other technology signals. Its SEO audit reviews titles, descriptions, canonical URLs, robots directives, headings, structured data, social sharing metadata, sitemap availability, image alternatives, links, and Lighthouse performance metrics.</p>
+        <p>SecurIX is designed to provide fast, practical findings without requiring an account. Results include clear pass, warning, and failure states with recommendations that help teams improve website security, privacy, resilience, discoverability, and performance.</p>
+      </main>
+    </noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
